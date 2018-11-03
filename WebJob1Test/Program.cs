@@ -12,8 +12,8 @@ namespace WebJob1Test
         static void Main()
         {
 
-            var cs = ConfigurationManager.AppSettings["cs"];
- 
+            var cs = Config.GetConnectionString();
+
             var config = new JobHostConfiguration();
 
             if (config.IsDevelopment)
