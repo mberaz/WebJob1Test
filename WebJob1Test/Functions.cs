@@ -5,7 +5,7 @@ namespace WebJob1Test
 {
     public class Functions
     {
-
+        //{"Id":1,"Name":"michael berezin","Email":"mbearz@gmail.com"}
         public static void Step1 (
             [QueueTrigger("michaeltest")] User user,
             [Queue("michaeltestsecond")] out UserMetaData metaData)
@@ -35,18 +35,22 @@ namespace WebJob1Test
         [Table("Persons")] ICollector<Person> persons)
         {
             var user = metaData.User;
-            var person = new Person
+            if(metaData.IsDone)
             {
-                PartitionKey = "users",
-                RowKey = user.Id.ToString(),
+                var person = new Person
+                {
+                    PartitionKey = "users",
+                    RowKey = user.Id.ToString(),
 
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                IsUser = true
-            };
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    IsUser = true
+                };
 
-            persons.Add(person);
+                persons.Add(person);
+            }
+
         }
 
     }
