@@ -1,5 +1,8 @@
 ﻿using Microsoft.Azure.WebJobs;
+using Microsoft.WindowsAzure.Storage.Queue;
+using Newtonsoft.Json;
 using System;
+using System.Threading.Tasks;
 
 namespace WebJob1Test
 {
@@ -40,7 +43,7 @@ namespace WebJob1Test
                 var person = new Person
                 {
                     PartitionKey = "users",
-                    RowKey = user.Id.ToString(),
+                    RowKey = DateTime.UtcNow.Ticks.ToString(),
 
                     Id = user.Id,
                     Name = user.Name,
@@ -53,5 +56,22 @@ namespace WebJob1Test
 
         }
 
+        //name resolved in QueueNameResolver   class
+        public async static Task Dynamic ([QueueTrigger("%dynamic%")] User user,IBinder binder)
+        {
+
+            var metaDataOut = new UserMetaData
+            {
+                User = user,
+                IsDone = true,
+                HandeltedAt = DateTime.UtcNow.ToString()
+            };
+
+
+            QueueAttribute queueAttribute = new QueueAttribute("michaeltest3");
+            CloudQueue outputQueue = binder.Bind<CloudQueue>(queueAttribute);
+            await outputQueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(metaDataOut)));
+
+        }
     }
 }

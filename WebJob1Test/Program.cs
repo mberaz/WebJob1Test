@@ -20,6 +20,8 @@ namespace WebJob1Test
             {
                 config.UseDevelopmentSettings();
             }
+
+            config.NameResolver = new QueueNameResolver();
             config.StorageConnectionString = cs;
             config.DashboardConnectionString = cs;
             config.Queues.BatchSize = 1;
